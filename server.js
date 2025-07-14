@@ -8,7 +8,8 @@ const app = express();
 // 🛡️ CORS: Allow Vercel frontend and local development
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://oneshoemart-git-main-pradeep-paraskars-projects.vercel.app'
+  'https://oneshoemart.onrender.com',
+  'https://oneshoemart.vercel.app'
 ];
 
 app.use(cors({
