@@ -5,12 +5,8 @@ require('dotenv').config();
 
 const app = express();
 
-// 🛡️ CORS: Allow Vercel frontend and local development
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://oneshoemart.onrender.com',
-  'https://oneshoemart.vercel.app'
-];
+// ✅ CORS Configuration
+const allowedOrigins = ['https://oneshoemart.vercel.app'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -20,50 +16,53 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true
 }));
 
-// 📦 Middleware
+// ✅ Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // For form data if needed
+app.use(express.urlencoded({ extended: true }));
 
-// 🧩 Routes
+// ✅ Routes
 const shoeRoutes = require('./routes/shoes');
 const userAuthRoutes = require('./routes/userAuth');
 const storeAuthRoutes = require('./routes/storeAuth');
 const orderRoutes = require('./routes/orders');
 
-// Use Routes
 app.use('/api/user', userAuthRoutes);
 app.use('/api/store', storeAuthRoutes);
 app.use('/api/shoes', shoeRoutes);
 app.use('/api/orders', orderRoutes);
 
-// 🌐 Health Check
+// ✅ Health Check Endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'UP', time: new Date().toISOString() });
 });
 
-// 🧪 Root
+// ✅ Root Route
 app.get('/', (req, res) => {
   res.send('🛒 Shoe Store API is running');
 });
 
-// 🗂️ Serve static files (optional)
-app.use('/uploads', express.static('uploads')); // for image storage if needed
+// ✅ Static Folder (if needed)
+app.use('/uploads', express.static('uploads'));
 
-// 🧵 MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
+// ✅ Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// 🛠️ Optional: Global error handler
+// ✅ Global Error Handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+  res.status(500).json({ error: err.message || 'Something went wrong!' });
 });
 
-// 🚀 Start Server
+// ✅ Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
